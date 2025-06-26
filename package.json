@@ -19,10 +19,11 @@
     "typescript": "5.8.3"
   },
   "scripts": {
-    "wp-server": "node wp-server.js && exit 1",
-    "dev": "npm run wp-server && next dev",
+    "start": "node start.js",
+    "wp-server": "node wp-server.js",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    
     "lint": "next lint"
   }
 }
