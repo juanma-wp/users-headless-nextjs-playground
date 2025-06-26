@@ -1,6 +1,11 @@
 import axios from 'axios';
-import cookie from 'cookie';
+  const cookie = require("cookie");
+  //import cookie from 'cookie';
 import type { NextApiRequest, NextApiResponse } from 'next';
+
+console.log('DEBUG: cookie import is', cookie);
+console.log('DEBUG: typeof cookie is', typeof cookie);
+console.log('DEBUG: Object.keys(cookie) is', cookie && Object.keys(cookie));
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { token } = cookie.parse(req.headers.cookie || '');

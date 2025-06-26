@@ -33,4 +33,5 @@ await (async () => {
   // Optionally, print or log for debugging
   console.log("DYNAMIC_WP_URL set to:", process.env.DYNAMIC_WP_URL);
   console.log("DYNAMIC_JWT_AUTH_URL set to:", process.env.DYNAMIC_JWT_AUTH_URL);
+  
 })();

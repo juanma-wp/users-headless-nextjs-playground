@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import cookie from 'cookie';
+  const cookie = require("cookie");
+// import cookie from 'cookie';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader(

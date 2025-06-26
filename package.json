@@ -1,4 +1,8 @@
 {
+  "name": "next-wp-playground",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "dependencies": {
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
@@ -15,8 +19,8 @@
     "typescript": "5.8.3"
   },
   "scripts": {
-    "predev": "node prestart.js",
-    "dev": "next dev",
+    "wp-server": "node wp-server.js && exit 1",
+    "dev": "npm run wp-server && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
