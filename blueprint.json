@@ -10,6 +10,14 @@
         "resource": "wordpress.org/plugins",
         "slug": "jwt-authentication-for-wp-rest-api"
       }
-    }
+    },
+    {
+      "step": "defineWpConfigConsts",
+        "consts": {
+          "JWT_AUTH_SECRET_KEY": "your-top-secret-key",
+          "JWT_AUTH_CORS_ENABLE": true
+        }
+     }
+    
   ]
 }

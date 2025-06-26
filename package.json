@@ -6,12 +6,13 @@
   "dependencies": {
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@wp-playground/cli": "1.1.2",
     "axios": "^1.10.0",
     "cookie": "^1.0.2",
+    "fetch-cookie": "^3.1.0",
     "next": "^15.3.4",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "@wp-playground/cli": "1.1.2"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@types/cookie": "^0.6.0",
@@ -19,11 +20,8 @@
     "typescript": "5.8.3"
   },
   "scripts": {
-    "start": "node start.js",
-    "wp-server": "node wp-server.js",
     "dev": "next dev",
     "build": "next build",
-    
     "lint": "next lint"
   }
 }
