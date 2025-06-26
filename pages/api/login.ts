@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getWpPlaygroundHandler } from '../../wp-playground-handler';
+import { handlerPromise } from '../../server-wp';
 const cookie = require("cookie");
 import makeFetchCookie from 'fetch-cookie';
 
@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { username, password } = req.body;
 console.log({username, password});
   // Example usage: get the singleton handler (remove or use as needed)
-  const playgroundHandler = await getWpPlaygroundHandler();
+  const playgroundHandler = await handlerPromise;
   
   try {
     
