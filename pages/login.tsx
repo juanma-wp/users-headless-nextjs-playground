@@ -6,6 +6,7 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,19 +18,31 @@ export default function Login() {
     });
 
     if (res.ok) {
+      setSuccess('Login successful');
       router.push('/dashboard');
     } else {
-      setError('Login failed');
+      setError('Login failed. Please try again.');
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <h2>Login</h2>
-      <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+      <input
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+      />
       <button type="submit">Login</button>
       {error && <p>{error}</p>}
+      {success && <p>{success}</p>}
     </form>
   );
 } 

@@ -1,24 +1,37 @@
 import axios from 'axios';
-  const cookie = require("cookie");
-  //import cookie from 'cookie';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
-console.log('DEBUG: cookie import is', cookie);
-console.log('DEBUG: typeof cookie is', typeof cookie);
-console.log('DEBUG: Object.keys(cookie) is', cookie && Object.keys(cookie));
+import { handlerPromise } from "../../server-wp";
+import { fetchCookie } from "../../utils/fetchCookie";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { token } = cookie.parse(req.headers.cookie || '');
+  const { token } = req.cookies;
 
   if (!token) return res.status(401).json({ message: 'Not authenticated' });
-
+  const playgroundHandler = await handlerPromise;
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_WP_API_URL}/wp/v2/users/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const wpRestUrl = new URL(playgroundHandler.absoluteUrl);
+    wpRestUrl.pathname = "/wp-json/wp/v2/users/me";
+    const urlToFetch = wpRestUrl.toString();
 
-    res.status(200).json(response.data);
-  } catch {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders
+    };
+    console.log({ urlToFetch, requestOptions });
+    const response = await fetchCookie(urlToFetch, requestOptions);
+    const data = await response.json();
+    console.log(data);
+
+    // const response = await axios.get(`${process.env.NEXT_PUBLIC_WP_API_URL}/wp/v2/users/me`, {
+    //   headers: { Authorization: `Bearer ${token}` },
+    // });
+    console.log(response);
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
     res.status(401).json({ message: 'Token invalid or expired' });
   }
 } 
