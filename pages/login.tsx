@@ -6,6 +6,7 @@ import { Button } from "../components/ui/button";
 import { Label } from "../components/ui/label";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Mail, Lock } from "lucide-react";
+import DOMPurify from 'dompurify';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -32,7 +33,8 @@ export default function Login() {
     if (res.ok) {
       router.push('/dashboard');
     } else {
-      setError('Invalid credentials. Use any email and password "password"');
+      const errorData = await res.json();
+      setError(errorData.message || 'Invalid credentials. Use any email and password "password"');
     }
   };
 
@@ -77,7 +79,11 @@ export default function Login() {
             </div>
             {error && (
               <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>
+                  <span
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(error) }}
+                  />
+                </AlertDescription>
               </Alert>
             )}
             <Button type="submit" className="w-full" disabled={isLoading}>

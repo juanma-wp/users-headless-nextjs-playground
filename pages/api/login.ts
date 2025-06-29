@@ -40,22 +40,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log({ urlToFetch, headers: myHeaders, body: urlencoded.toString() });
 
     const response = await fetchCookie(urlToFetch, requestOptions);
-    const data = await response.json();
+    if (response.status !== 200) {
+      const errorData: any = await response.json();
+      console.error('Login error:', errorData);
+      return res.status(response.status).json({ message: errorData.message || 'Login failed' });
+    }
+    const data: any = await response.json();
+    if (data.code && data.message) {
+      // WordPress error format
+      console.error('Login error:', data);
+      return res.status(401).json({ message: data.message });
+    }
     console.log(data);
-    const { token, user_display_name } = data;
-    console.log(token, user_display_name);
+    const {token} = data;
+    // Store user data in session cookie alongside token
     res.setHeader(
       "Set-Cookie",
-      cookie.serialize("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24, // 1 day
-        sameSite: "strict",
-        path: "/",
-      })
+      [
+        cookie.serialize("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 60 * 60 * 24,
+          sameSite: "strict", 
+          path: "/"
+        })
+      ]
     );
-
-    res.status(200).json({ token, user_display_name });
+    res.status(200).json(data);
   } catch (error) {
     console.log(error);
     res.status(401).json({ message: 'Invalid credentials' });

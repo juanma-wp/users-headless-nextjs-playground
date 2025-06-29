@@ -7,6 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { token } = req.cookies;
 
   if (!token) return res.status(401).json({ message: 'Not authenticated' });
+  
   const playgroundHandler = await handlerPromise;
   try {
     const wpRestUrl = new URL(playgroundHandler.absoluteUrl);
