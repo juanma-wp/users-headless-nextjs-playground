@@ -9,9 +9,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!token) return res.status(401).json({ message: 'Not authenticated' });
   const playgroundHandler = await handlerPromise;
   try {
-    const wpRestUrl = new URL(playgroundHandler.absoluteUrl);
-    wpRestUrl.pathname = "/wp-json/wp/v2/users/me";
-    const urlToFetch = wpRestUrl.toString();
+    // const wpRestUrl = new URL(playgroundHandler.absoluteUrl);
+    // wpRestUrl.pathname = "/wp-json/wp/v2/users/me";
+    // const urlToFetch = wpRestUrl.toString();
+    const protocol = req.headers["x-forwarded-proto"] || "http";
+    const host = req.headers.host;
+    const baseUrl = `${protocol}://${host}`;
+    const urlToFetch = `${baseUrl}/wp/wp-json/wp/v2/users/me`;
+    // const urlToFetch = "/wp/wp-json/wp/v2/users/me";
 
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${token}`);
