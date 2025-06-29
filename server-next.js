@@ -4,6 +4,7 @@ import next from "next";
 import { parse } from "url";
 import cookieParser from "cookie-parser";
 import { handlerPromise } from "./server-wp.js";
+import { getRawBody } from "./utils/getRawBody.js";
 //import cookie from "cookie";
 
 const dev = process.env.NODE_ENV !== "production";
@@ -31,8 +32,28 @@ const middlewares = [cookieParser()];
 app.prepare().then(async () => {
   const wpHandler = await handlerPromise;
 
-  createServer((req, res) => {
-    runMiddleware(req, res, middlewares, (err) => {
+  function rewriteLocationHeaders(headers, req) {
+    const newHeaders = { ...headers };
+    if (newHeaders["location"] || newHeaders["Location"]) {
+      const key = newHeaders["location"] ? "location" : "Location";
+      const values = Array.isArray(newHeaders[key]) ? newHeaders[key] : [newHeaders[key]];
+      newHeaders[key] = values.map((loc) => {
+        try {
+          const url = new URL(loc, `http://${req.headers.host}`);
+          url.host = req.headers.host;
+          url.protocol = req.headers["x-forwarded-proto"] || "http:";
+          return url.toString();
+        } catch (e) {
+          return loc;
+        }
+      });
+      if (newHeaders[key].length === 1) newHeaders[key] = newHeaders[key][0];
+    }
+    return newHeaders;
+  }
+
+  createServer(async (req, res) => {
+    runMiddleware(req, res, middlewares, async (err) => {
       if (err) {
         res.statusCode = 500;
         res.end("Middleware error");
@@ -40,93 +61,46 @@ app.prepare().then(async () => {
       }
       // Route /wp requests to the WordPress Playground handler
       if (req.url.startsWith("/wp")) {
-        (async () => {
-          // Convert Node.js IncomingMessage to PHPRequest
-          const chunks = [];
-          for await (const chunk of req) {
-            chunks.push(chunk);
-          }
-          const body = Buffer.concat(chunks);
+        // Collect body
+        const body = await getRawBody(req);
 
-          // Clone headers and set Host/X-Forwarded-Proto
-          const headers = { ...req.headers };
-          headers["host"] = req.headers.host;
-          headers["x-forwarded-proto"] =
-            req.headers["x-forwarded-proto"] || "http";
+        // Prepare headers
+        const headers = { ...req.headers };
+        headers["host"] = req.headers.host;
+        headers["x-forwarded-proto"] = req.headers["x-forwarded-proto"] || "http";
+        if (req.url === "/wp/wp-json/" || req.url === "/wp/wp-json") {
+          headers["accept"] = "application/json";
+        }
 
-          // Force Accept header for REST API root
-          if (req.url === "/wp/wp-json/" || req.url === "/wp/wp-json") {
-            headers["accept"] = "application/json";
-          }
+        // Logging (optional, can be toggled)
+        console.log("--- Incoming Request Headers to Playground ---\n", headers);
 
-          // Log incoming headers
-          console.log("--- Incoming Request Headers to Playground ---");
-          console.log(headers);
+        const phpRequest = {
+          url: req.url,
+          method: req.method,
+          headers,
+          body: body.length ? body : undefined,
+        };
+        const phpResponse = await wpHandler.request(phpRequest);
 
-          const phpRequest = {
-            url: req.url,
-            method: req.method,
-            headers,
-            body: body.length ? body : undefined,
-          };
-          // Call the PHP Playground handler
-          const phpResponse = await wpHandler.request(phpRequest);
+        // Log response headers and preview body
+        // console.log("--- PHP Playground Response Headers ---\n", phpResponse.headers);
+        // const previewBody = Buffer.from(phpResponse.bytes).toString("utf8", 0, 500);
+        // console.log("--- PHP Playground Response Body (first 500 bytes) ---\n", previewBody);
 
-          // Log all headers
-          console.log("--- PHP Playground Response Headers ---");
-          for (const [key, value] of Object.entries(
-            phpResponse.headers || {}
-          )) {
-            console.log(`${key}:`, value);
-          }
-          // Log first 500 bytes of the response body
-          const previewBody = Buffer.from(phpResponse.bytes).toString(
-            "utf8",
-            0,
-            500
-          );
-          console.log("--- PHP Playground Response Body (first 500 bytes) ---");
-          console.log(previewBody);
-
-          // Write status
-          res.statusCode = phpResponse.httpStatusCode || 200;
-          // Write headers, rewriting Location if present
-          for (const [key, value] of Object.entries(
-            phpResponse.headers || {}
-          )) {
-            if (key.toLowerCase() === "location") {
-              // Handle both string and array values
-              const values = Array.isArray(value) ? value : [value];
-              const rewritten = values.map((loc) => {
-                try {
-                  const playgroundUrl = new URL(
-                    loc,
-                    `http://${req.headers.host}`
-                  );
-                  playgroundUrl.host = req.headers.host;
-                  playgroundUrl.protocol =
-                    req.headers["x-forwarded-proto"] || "http:";
-                  return playgroundUrl.toString();
-                } catch (e) {
-                  return loc;
-                }
-              });
-              res.setHeader(
-                key,
-                rewritten.length === 1 ? rewritten[0] : rewritten
-              );
-            } else {
-              res.setHeader(key, value);
-            }
-          }
-          // Log outgoing status and headers
-          console.log("--- Outgoing Response Status ---");
-          console.log(res.statusCode);
-          console.log("--- Outgoing Response Headers ---");
-          console.log(res.getHeaders());
-          // Write body
-          res.end(Buffer.from(phpResponse.bytes));
-        })();
+        // Write status
+        res.statusCode = phpResponse.httpStatusCode || 200;
+        
+        // Rewrite headers (especially Location)
+        const outHeaders = rewriteLocationHeaders(phpResponse.headers || {}, req);
+        for (const [key, value] of Object.entries(outHeaders)) {
+          res.setHeader(key, value);
+        }
+        // Log outgoing status and headers
+        console.log("--- Outgoing Response Status ---\n", res.statusCode);
+        console.log("--- Outgoing Response Headers ---\n", res.getHeaders());
+        // Write body
+        res.end(Buffer.from(phpResponse.bytes));
         return;
       }
       const parsedUrl = parse(req.url, true);
