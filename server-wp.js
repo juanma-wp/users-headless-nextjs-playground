@@ -16,6 +16,13 @@ async function initializeWpPlayground() {
     const cliServer = await runCLI({
       command: "server",
       blueprint,
+      mount: [
+        {
+          hostPath: resolve("./database/"),
+          vfsPath: `/wordpress/wp-content/database/`,
+        },
+      ],
+      
     });
 
     return cliServer.requestHandler;
