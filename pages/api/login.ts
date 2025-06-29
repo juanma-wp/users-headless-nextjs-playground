@@ -16,9 +16,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
   try {
     
-    const wpRestUrl = new URL(playgroundHandler.absoluteUrl);
-    wpRestUrl.pathname = "/wp-json/jwt-auth/v1/token";
-    const urlToFetch = wpRestUrl.toString();
+    const protocol = req.headers["x-forwarded-proto"] || "http";
+    const host = req.headers.host;
+    const baseUrl = `${protocol}://${host}`;
+    const urlToFetch = `${baseUrl}/wp/wp-json/jwt-auth/v1/token`;
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");

@@ -45,10 +45,10 @@ async function initializeWpPlayground() {
       debug: true,
       login: true,
       mount: [
-        // {
-        //   hostPath: resolve("./database/"),
-        //   vfsPath: `/wordpress/wp-content/database/`,
-        // },
+        {
+          hostPath: resolve("./database/"),
+          vfsPath: `/wordpress/wp-content/database/`,
+        },
         {
           hostPath: resolve("./wordpress/plugins/extended-user-info-rest.php"),
           vfsPath: `/wordpress/wp-content/mu-plugins/extended-user-info-rest.php`,
