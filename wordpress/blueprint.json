@@ -13,11 +13,10 @@
     },
     {
       "step": "defineWpConfigConsts",
-        "consts": {
-          "JWT_AUTH_SECRET_KEY": "your-top-secret-key",
-          "JWT_AUTH_CORS_ENABLE": true
-        }
-     }
-    
+      "consts": {
+        "JWT_AUTH_SECRET_KEY": "",
+        "JWT_AUTH_CORS_ENABLE": true
+      }
+    }
   ]
 }
