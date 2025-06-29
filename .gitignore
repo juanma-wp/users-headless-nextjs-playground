@@ -40,3 +40,8 @@ coverage/
 
 # Others
 *.tgz 
+
+# WordPress database
+.ht.sqlite
+.htaccess
+wordpress/database/index.php

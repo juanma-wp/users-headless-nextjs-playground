@@ -42,13 +42,19 @@ async function initializeWpPlayground() {
 
     const cliServer = await runCLI({
       command: "server",
-      blueprint,
+      debug: true,
+      login: true,
       mount: [
+        // {
+        //   hostPath: resolve("./database/"),
+        //   vfsPath: `/wordpress/wp-content/database/`,
+        // },
         {
           hostPath: resolve("./wordpress/plugins/extended-user-info-rest.php"),
           vfsPath: `/wordpress/wp-content/mu-plugins/extended-user-info-rest.php`,
         },
       ],
+      blueprint,
     });
 
     return cliServer.requestHandler;
