@@ -92,9 +92,9 @@ export default function Dashboard({ user }) {
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Profile</CardTitle>
+              <CardHeader className="!flex-row items-center gap-2 p-6">
                 <User className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium inline-flex">Profile</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center space-x-4">
@@ -115,9 +115,9 @@ export default function Dashboard({ user }) {
               </CardContent>
             </Card>
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Contact</CardTitle>
+              <CardHeader className="!flex-row items-center gap-2 p-6">
                 <Mail className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium inline-flex">Contact</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -129,9 +129,9 @@ export default function Dashboard({ user }) {
               </CardContent>
             </Card>
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Account</CardTitle>
+              <CardHeader className="!flex-row items-center gap-2 p-6">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium inline-flex">Account</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
