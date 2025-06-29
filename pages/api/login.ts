@@ -40,9 +40,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log({ urlToFetch, headers: myHeaders, body: urlencoded.toString() });
 
     const response = await fetchCookie(urlToFetch, requestOptions);
-    const data = await response.json();
-    console.log(data);
-    const { token, user_display_name } = data;
+    const responseData: any = await response.json();
+    console.log(responseData);
+    if (responseData.data && responseData.data.status && responseData.data.status !== 200) {
+      return res
+        .status(responseData.data.status)
+        .json({ message: responseData.data.message || "Invalid credentials" });
+    }
+    const { token, user_display_name } = responseData.token ? responseData : responseData.data;
     console.log(token, user_display_name);
     res.setHeader(
       "Set-Cookie",
