@@ -19,7 +19,6 @@
       "step": "defineWpConfigConsts",
       "consts": {
         "WP_HOME": "http://localhost:3000/wp",
-        "WP_SITEURL": "http://localhost:3000/wp",
         "JWT_AUTH_SECRET_KEY": "",
         "JWT_AUTH_CORS_ENABLE": true
       }
