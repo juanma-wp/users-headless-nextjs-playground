@@ -45,3 +45,5 @@ coverage/
 .ht.sqlite
 .htaccess
 wordpress/database/index.php
+
+.env
