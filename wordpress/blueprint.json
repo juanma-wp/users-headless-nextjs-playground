@@ -20,7 +20,9 @@
       "consts": {
         "WP_HOME": "http://localhost:3000/wp",
         "JWT_AUTH_SECRET_KEY": "",
-        "JWT_AUTH_CORS_ENABLE": true
+        "WP_MEMORY_LIMIT": "64M",
+        "WP_MAX_MEMORY_LIMIT": "128M",
+        "DISABLE_WP_CRON": true
       }
     }
   ]
