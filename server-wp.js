@@ -4,7 +4,7 @@ import { resolve } from "path";
 import { config } from "dotenv";
 
 // Load environment variables from .env.local
-config({ path: '.env.local' });
+config();
 
 // Get JWT secret key from environment variables
 const jwtSecretKey = process.env.JWT_AUTH_SECRET_KEY;

@@ -81,7 +81,8 @@ app.prepare().then(async () => {
           headers,
           body: body.length ? body : undefined,
         };
-        const phpResponse = await wpHandler.request(phpRequest);
+        // const phpResponse = await wpHandler.request(phpRequest);
+        const phpResponse = await wpHandler.processManager.primaryPhp.requestHandler(phpRequest);
 
         // Log response headers and preview body
         // console.log("--- PHP Playground Response Headers ---\n", phpResponse.headers);
