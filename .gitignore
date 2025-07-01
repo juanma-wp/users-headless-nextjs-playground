@@ -47,3 +47,4 @@ coverage/
 wordpress/database/index.php
 
 .env
+docs/

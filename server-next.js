@@ -17,7 +17,19 @@ const handle = app.getRequestHandler();
 //   req.cookies = cookies ? cookie.parse(cookies) : {};
 //   next();
 // }
-
+setInterval(() => {
+  const used = process.memoryUsage();
+  const now = new Date().toLocaleString();
+  console.log('-----------------------------');
+  console.log(`Memory usage at ${now}:`);
+  console.log(`rss: ${(used.rss / 1024 / 1024).toFixed(2)} MB - Resident Set Size: total memory allocated for the process (includes all C++ and JS objects, stacks, etc.)`);
+  console.log(`heapTotal: ${(used.heapTotal / 1024 / 1024).toFixed(2)} MB - V8's total heap size`);
+  console.log(`heapUsed: ${(used.heapUsed / 1024 / 1024).toFixed(2)} MB - V8's used heap size`);
+  console.log(`external: ${(used.external / 1024 / 1024).toFixed(2)} MB - Memory used by C++ objects bound to JS objects managed by V8`);
+  console.log(`arrayBuffers: ${(used.arrayBuffers / 1024 / 1024).toFixed(2)} MB - Memory allocated for ArrayBuffers and SharedArrayBuffers`);
+  console.log('-----------------------------\n');
+}, 10000); // logs every 10 seconds
+  
 function runMiddleware(req, res, middlewares, done) {
   let i = 0;
   function next(err) {
