@@ -30,7 +30,7 @@ See diagram: https://excalidraw.com/#json=uLJcu2fd3BhWgoMmcZWIi,ytn8Nz7DpPrWiIqf
    npm install
    ```
 
-3. **Create a `.env.local` file in the project root:**
+3. **Create a `.env` file in the project root:**
    ```env
    JWT_AUTH_SECRET_KEY=your_super_secret_key
    ```
