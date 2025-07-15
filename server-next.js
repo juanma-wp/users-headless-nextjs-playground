@@ -3,7 +3,7 @@ import { createServer } from "http";
 import next from "next";
 import { parse } from "url";
 import cookieParser from "cookie-parser";
-import { handlerPromise } from "./server-wp.js";
+import { createPlaygroundHandler } from "./server-wp.js";
 import { getRawBody } from "./utils/getRawBody.js";
 //import cookie from "cookie";
 
@@ -42,7 +42,7 @@ function runMiddleware(req, res, middlewares, done) {
 const middlewares = [cookieParser()];
 
 app.prepare().then(async () => {
-  const wpHandler = await handlerPromise;
+  const wpHandler = await createPlaygroundHandler();
 
   function rewriteLocationHeaders(headers, req) {
     const newHeaders = { ...headers };
@@ -93,8 +93,7 @@ app.prepare().then(async () => {
           headers,
           body: body.length ? body : undefined,
         };
-        // const phpResponse = await wpHandler.request(phpRequest);
-        const phpResponse = await wpHandler.processManager.primaryPhp.requestHandler(phpRequest);
+        const phpResponse = await wpHandler.request(phpRequest);
 
         // Log response headers and preview body
         // console.log("--- PHP Playground Response Headers ---\n", phpResponse.headers);
