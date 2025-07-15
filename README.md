@@ -51,7 +51,7 @@ See diagram: https://excalidraw.com/#json=uLJcu2fd3BhWgoMmcZWIi,ytn8Nz7DpPrWiIqf
 
 ## How it works
 
-- The custom server (`server-next.js`) launches both Next.js and a WordPress Playground instance.
+- The application uses standard Next.js with WordPress Playground integration via API routes.
 - API routes (`/api/login`, `/api/profile`, `/api/logout`) handle authentication and user data, proxying requests to the in-memory WordPress.
 - The login page provides a styled form; the dashboard is protected and displays user info from WordPress.
 - At `/wp` we have access to the WP installation so we can do requests to the WP REST API to `/wp/wp-json/wp/v2`

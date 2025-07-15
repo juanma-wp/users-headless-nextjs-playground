@@ -2,12 +2,7 @@
   "features": {
     "networking": true
   },
-  "login": true,
   "steps": [
-    {
-      "step": "runWpInstallationWizard",
-      "options": {}
-    },
     {
       "step": "installPlugin",
       "pluginData": {
@@ -18,12 +13,14 @@
     {
       "step": "defineWpConfigConsts",
       "consts": {
-        "WP_HOME": "http://localhost:3000/wp",
-        "JWT_AUTH_SECRET_KEY": "",
-        "WP_MEMORY_LIMIT": "64M",
-        "WP_MAX_MEMORY_LIMIT": "128M",
-        "DISABLE_WP_CRON": true
+        "JWT_AUTH_SECRET_KEY": "your-top-secret-key",
+        "JWT_AUTH_CORS_ENABLE": true
       }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/mu-plugins/rewrite.php",
+      "data": "<?php add_action( 'after_setup_theme', function() { global $wp_rewrite; $wp_rewrite->set_permalink_structure('/%postname%/'); $wp_rewrite->flush_rules(); } );"
     }
   ]
 }

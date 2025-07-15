@@ -50,3 +50,6 @@ export async function createPlaygroundHandler() {
     throw error;
   }
 }
+
+// Create a singleton handler promise
+export const handlerPromise = createPlaygroundHandler();
