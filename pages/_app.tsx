@@ -1,6 +1,8 @@
 import '../app/globals.css'
 import type { AppProps } from 'next/app'
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { WordPressLoading } from '@/components/wordpress-loading'
+import { WordPressError } from '@/components/wordpress-error'
 
 // Create context for the WordPress handler status
 interface WordPressHandlerContextType {
@@ -29,30 +31,37 @@ function WordPressHandlerProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const checkHandlerStatus = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      console.log('🚀 Checking WordPress handler status...');
+      const response = await fetch('/api/wp-status');
+      const data = await response.json();
+      
+      if (data.status === 'ready') {
+        console.log('✅ WordPress handler is ready');
+        setIsReady(true);
+      } else {
+        throw new Error(data.error || 'Handler not ready');
+      }
+    } catch (err) {
+      console.error('❌ Failed to check WordPress handler:', err);
+      setError(err instanceof Error ? err : new Error('Unknown error'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const checkHandlerStatus = async () => {
-      try {
-        console.log('🚀 Checking WordPress handler status...');
-        const response = await fetch('/api/wp-status');
-        const data = await response.json();
-        
-        if (data.status === 'ready') {
-          console.log('✅ WordPress handler is ready');
-          setIsReady(true);
-        } else {
-          throw new Error(data.error || 'Handler not ready');
-        }
-      } catch (err) {
-        console.error('❌ Failed to check WordPress handler:', err);
-        setError(err instanceof Error ? err : new Error('Unknown error'));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     checkHandlerStatus();
-  }, []);
+  }, [retryCount]);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+  };
 
   const value = {
     isReady,
@@ -62,7 +71,13 @@ function WordPressHandlerProvider({ children }: { children: ReactNode }) {
 
   return (
     <WordPressHandlerContext.Provider value={value}>
-      {children}
+      {isLoading ? (
+        <WordPressLoading />
+      ) : error ? (
+        <WordPressError error={error} onRetry={handleRetry} />
+      ) : (
+        children
+      )}
     </WordPressHandlerContext.Provider>
   );
 }
